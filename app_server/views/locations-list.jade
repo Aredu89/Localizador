@@ -1,76 +1,32 @@
 extends layout
 
+include _includes/functions
+
 block content
     #banner.page-header
       .row
         .col-lg-12
           p
-            h2
-              | Localizador 
-              small.text-muted  Encontrá lugares para trabajar con wifi cerca tuyo!
+            h2= pageHeader.title
+              small.text-muted  #{pageHeader.strapline}
             hr.my-4
     .row
       .col-xs-12.col-sm-8
-        .card.text-white.bg-primary.mb-3(style='max-width: 100%;')
-          a(href="/location")
-            h4
-              .card-header 
-                | Starcups
-                small &nbsp;
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/white_star.png').stars
-                  img(src='./images/white_star.png').stars
-                  img(src='./images/white_star.png').stars
-                span.badge.float-right.badge-secondary 100m
-          .card-body
-            p.card-text
-              | Av Velez Sarsfield 555, Córdoba
-              br
-              br
-              span.badge.badge-info.tags Bebidas calientes
-              span.badge.badge-info.tags Premium wifi
-              span.badge.badge-info.tags Tragos
-
-        .card.text-white.bg-primary.mb-3(style='max-width: 100%;')
-          a(href="/location")
-            h4
-              .card-header 
-                | Temple Bar
-                small &nbsp;
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/white_star.png').stars
-                  img(src='./images/white_star.png').stars
-                span.badge.float-right.badge-secondary 100m
-          .card-body
-            p.card-text
-              | Bario Güemes, Córdoba
-              br
-              br
-              span.badge.badge-info.tags Premium wifi
-              span.badge.badge-info.tags Tragos
-
-        .card.text-white.bg-primary.mb-3(style='max-width: 100%;')
-          a(href="/location")
-            h4
-              .card-header 
-                | Patio Olmos
-                small &nbsp;
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/black_star.png').stars
-                  img(src='./images/white_star.png').stars
-                span.badge.float-right.badge-secondary 100m
-          .card-body
-            p.card-text
-              | Av Velez Sarsfield y San Juan, Córdoba
-              br
-              br
-              span.badge.badge-info.tags Comidas
-              span.badge.badge-info.tags Premium wifi
-              span.badge.badge-info.tags Helados    
+        each location in locations
+          .card.text-white.bg-primary.mb-3(style='max-width: 100%;')
+            a(href="/location")
+              h4
+                .card-header 
+                  | #{location.name}
+                  small &nbsp;
+                    +outputRating(location.rating)
+                  span.badge.float-right.badge-secondary #{location.distance}
+            .card-body
+              p.card-text
+                | #{location.address}
+                br
+                br
+                each facility in location.facilities
+                  span.badge.badge-info.tags= facility
       .col-xs-12.col-sm-4
-        p.lead Buscando wifi? Localizador te ayuda a encontrar lugares para trabajar cuando estás fuera de casa.
+        p.lead= sidebar
