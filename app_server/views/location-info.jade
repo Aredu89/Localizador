@@ -1,41 +1,40 @@
 extends layout
 
+include _includes/functions
+
 block content
     #banner.page-header
       .row
         .col-lg-12
             p
-              h2 Starcups
+              h2= pageHeader.title
               hr.my-4
     .row
       .col-xs-12.col-md-9
         .row
           .col-xs-12.col-sm-6
             p.rating
-                img(src='./images/black_star.png').stars
-                img(src='./images/black_star.png').stars
-                img(src='./images/black_star.png').stars
-                img(src='./images/white_star.png').stars
-                img(src='./images/white_star.png').stars
-            p Av Velez Sarsfield 555, Córdoba
+                +outputRating(location.rating)
+            p= location.address
             .card.border-primary.mb-3(style='max-width: 100%;')
               .card-header
                 h4.card-title Horario de atención
               .card-body
-                p.card-text
-                | Lunes - Viernes : 7:00 am - 10 pm
-                br
-                | Sabados: 8:00 am - 7 pm
-                br
-                | Domingos: Cerrado
+                each time in location.openingTimes
+                  p.card-text
+                    | #{time.days} : 
+                    if time.closed
+                      | Closed
+                    else
+                      | #{time.opening} - #{time.closing}
+                    br
             .card.border-primary.mb-3(style='max-width: 100%;')
               .card-header
                 h4.card-title Instalaciones
               .card-body
                 p.card-text
-                  span.badge.badge-info.tags Bebidas calientes
-                  span.badge.badge-info.tags Premium wifi
-                  span.badge.badge-info.tags Tragos
+                  each facility in location.facilities
+                    span.badge.badge-info.tags= facility
           .col-xs-12.col-sm-6.location-map
             .card.mb-3
               h4.card-header Ubicación
@@ -47,37 +46,19 @@ block content
                 h4.card-title Comentarios de Clientes
                   a.btn.float-right.btn-outline-primary(type='button', href='/location/review/new') Comentar
               table.table.table-hover
-                tr.table-primary
-                  td
-                    span.rating
-                      img(src='./images/black_star.png').stars
-                      img(src='./images/black_star.png').stars
-                      img(src='./images/black_star.png').stars
-                      img(src='./images/white_star.png').stars
-                      img(src='./images/white_star.png').stars
-                    |  
-                    span.reviewAuthor
-                      b Ariel Rosales 
-                    small.reviewTime 
-                      k 17 Febrero 2019
-                tr.table-secondary
-                  td Las instalaciones son muy comodas y tiene un buen wi fi.
-                tr.table-primary
-                  td
-                    span.rating
-                      img(src='./images/black_star.png').stars
-                      img(src='./images/black_star.png').stars
-                      img(src='./images/black_star.png').stars
-                      img(src='./images/black_star.png').stars
-                      img(src='./images/white_star.png').stars
-                    |  
-                    span.reviewAuthor
-                      b Enzo Mariani 
-                    small.reviewTime
-                      k 13 Febrero 2019
-                tr.table-secondary
-                  td El café no es muy bueno, pero el lugar es cómodo y tranquilo para trabajar.
+                each review in location.reviews
+                  tr.table-primary
+                    td
+                      span.rating
+                        +outputRating(review.rating)
+                      |  
+                      span.reviewAuthor
+                        b= review.author
+                      small.reviewTime 
+                        k= review.timeStamp
+                  tr.table-secondary
+                    td !{(review.reviewText).replace(/\n/g, '<br/>')}
       .col-xs-12.col-md-3
-        p.lead Starcups café está en Localizador porque tiene acceso a wi fi y espacio para sentarse con tu laptop y trabajar.
-        p Si estuviste en este lugar y te gustó - o si no - por favor dejanos tus comentarios para ayudar a otras personas como vos.
+        p.lead #{location.name} #{sidebar.context}
+        p= sidebar.callToAction
               
