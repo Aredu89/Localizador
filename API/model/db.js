@@ -9,7 +9,9 @@ var gracefulShutdown = function (msg, callback) {
 };
 
 var dbURI = 'mongodb://localhost/Localizador';
+//URL para la base en el servidor
 dbURI = 'mongodb://u0haubzbiwyypyf1u8mj:4oEskTsSYoIIVJ2kyvKb@bvoayqrxz5wsvwp-mongodb.services.clever-cloud.com:27017/bvoayqrxz5wsvwp';
+//
 mongoose.connect(dbURI,{ useNewUrlParser: true });
 
 //Simulacion de evento SIGINT

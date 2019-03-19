@@ -1,0 +1,11 @@
+> db.locations.save({name: 'Starcups',address: 'Av Velez Sarsfield 555, Córdoba',rating: 3,facilities: ['Bebidas calientes','Premium wifi','Tragos'],coords: [-0.9690884, 51.455041],openingTimes: [{days: 'Lunes - Viernes',opening: '7:00am',closing: '10:00pm',closed: false}, {days: 'Sabados',opening: '8:00am',closing: '7:00pm',closed: false}, {days: 'Domingo',closed: true}]})
+
+> db.locations.update({name: 'Starcups'}, {$push: {reviews: [{author: 'Ariel Rosales',id: ObjectId(),rating: 3,timestamp: new Date("Feb 17, 2019"),reviewText: "Las instalaciones son muy comodas y tiene un buen wi fi."},{author: 'Enzo Mariani',id: ObjectId(),rating: 4,timestamp: new Date("Feb 13, 2019"),reviewText: "El café no es muy bueno, pero el lugar es cómodo y tranquilo para trabajar."}]}})
+
+> db.locations.save({name: 'Temple Bar',address: 'Bario Güemes, Córdoba',rating: 3,facilities: ['Premium wifi','Tragos'],coords: [-0.9690884, 51.455041],openingTimes: [{days: 'Lunes - Viernes',opening: '7:00am',closing: '12:00pm',closed: false}, {days: 'Sabados',opening: '8:00am',closing: '9:00pm',closed: false}, {days: 'Domingo',opening: '5:00pm',closing: '9:00pm',closed: false}]})
+
+> db.locations.update({name: 'Temple Bar'}, {$push: {reviews: [{author: 'Ariel Rosales',id: ObjectId(),rating: 3,timestamp: new Date("Feb 20, 2019"),reviewText: "Buen ambiente y lugar tranquilo"},{author: 'Enzo Mariani',id: ObjectId(),rating: 4,timestamp: new Date("Feb 13, 2019"),reviewText: "La musica estaba muy fuerte pero el lugar es comodo"}]}})
+
+> db.locations.save({name: 'Patio Olmos',address: 'Av Velez Sarsfield y San Juan, Córdoba',rating: 4,facilities: ['Comidas','Premium wifi','Helados'],coords: [-0.9690884, 51.455041],openingTimes: [{days: 'Lunes - Viernes',opening: '7:00am',closing: '11:00pm',closed: false}, {days: 'Sabados',opening: '8:00am',closing: '7:00pm',closed: false}, {days: 'Domingo',closed: true}]})
+
+> db.locations.update({name: 'Patio Olmos'}, {$push: {reviews: [{author: 'Ariel Rosales',id: ObjectId(),rating: 3,timestamp: new Date("Mar 03, 2019"),reviewText: "El wi fi es rapido y el cafe rico"},{author: 'Enzo Mariani',id: ObjectId(),rating: 5,timestamp: new Date("Mar 05, 2019"),reviewText: "Todo excelente"}]}})
