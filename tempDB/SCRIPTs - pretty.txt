@@ -2,6 +2,7 @@
     name: 'Starcups',
     address: 'Av Velez Sarsfield 555, Córdoba',
     rating: 3,
+    distance: 100,
     facilities: ['Bebidas calientes','Premium wifi','Tragos'],
     coords: [-0.9690884, 51.455041],
     openingTimes: [{
@@ -17,34 +18,28 @@
     }, {
         days: 'Domingo',
         closed: true
+    }],
+    reviews: [{
+        author: 'Ariel Rosales',
+        _id: ObjectId(),
+        rating: 3,
+        timestamp: new Date("Feb 17, 2019"),
+        reviewText: "Las instalaciones son muy comodas y tiene un buen wi fi."
+    },
+    {
+        author: 'Enzo Mariani',
+        _id: ObjectId(),
+        rating: 4,
+        timestamp: new Date("Feb 13, 2019"),
+        reviewText: "El café no es muy bueno, pero el lugar es cómodo y tranquilo para trabajar."
     }]
-})
-
-> db.locations.update({
-    name: 'Starcups'
-}, {
-    $push: {
-        reviews: [{
-            author: 'Ariel Rosales',
-            id: ObjectId(),
-            rating: 3,
-            timestamp: new Date("Feb 17, 2019"),
-            reviewText: "Las instalaciones son muy comodas y tiene un buen wi fi."
-        },
-        {
-            author: 'Enzo Mariani',
-            id: ObjectId(),
-            rating: 4,
-            timestamp: new Date("Feb 13, 2019"),
-            reviewText: "El café no es muy bueno, pero el lugar es cómodo y tranquilo para trabajar."
-        }]
-    }
 })
 
 > db.locations.save({
     name: 'Temple Bar',
     address: 'Bario Güemes, Córdoba',
     rating: 3,
+    distance: 200,
     facilities: ['Premium wifi','Tragos'],
     coords: [-0.9690884, 51.455041],
     openingTimes: [{
@@ -62,34 +57,28 @@
         opening: '5:00pm',
         closing: '9:00pm',
         closed: false
+    }],
+    reviews: [{
+        author: 'Ariel Rosales',
+        _id: ObjectId(),
+        rating: 3,
+        timestamp: new Date("Feb 20, 2019"),
+        reviewText: "Buen ambiente y lugar tranquilo"
+    },
+    {
+        author: 'Enzo Mariani',
+        _id: ObjectId(),
+        rating: 4,
+        timestamp: new Date("Feb 13, 2019"),
+        reviewText: "La musica estaba muy fuerte pero el lugar es comodo"
     }]
-})
-
-> db.locations.update({
-    name: 'Temple Bar'
-}, {
-    $push: {
-        reviews: [{
-            author: 'Ariel Rosales',
-            id: ObjectId(),
-            rating: 3,
-            timestamp: new Date("Feb 20, 2019"),
-            reviewText: "Buen ambiente y lugar tranquilo"
-        },
-        {
-            author: 'Enzo Mariani',
-            id: ObjectId(),
-            rating: 4,
-            timestamp: new Date("Feb 13, 2019"),
-            reviewText: "La musica estaba muy fuerte pero el lugar es comodo"
-        }]
-    }
 })
 
 > db.locations.save({
     name: 'Patio Olmos',
     address: 'Av Velez Sarsfield y San Juan, Córdoba',
     rating: 4,
+    distance: 250,
     facilities: ['Comidas','Premium wifi','Helados'],
     coords: [-0.9690884, 51.455041],
     openingTimes: [{
@@ -105,26 +94,19 @@
     }, {
         days: 'Domingo',
         closed: true
+    }],
+    reviews: [{
+        author: 'Ariel Rosales',
+        _id: ObjectId(),
+        rating: 3,
+        timestamp: new Date("Mar 03, 2019"),
+        reviewText: "El wi fi es rapido y el cafe rico"
+    },
+    {
+        author: 'Enzo Mariani',
+        _id: ObjectId(),
+        rating: 5,
+        timestamp: new Date("Mar 05, 2019"),
+        reviewText: "Todo excelente"
     }]
-})
-
-> db.locations.update({
-    name: 'Patio Olmos'
-}, {
-    $push: {
-        reviews: [{
-            author: 'Ariel Rosales',
-            id: ObjectId(),
-            rating: 3,
-            timestamp: new Date("Mar 03, 2019"),
-            reviewText: "El wi fi es rapido y el cafe rico"
-        },
-        {
-            author: 'Enzo Mariani',
-            id: ObjectId(),
-            rating: 5,
-            timestamp: new Date("Mar 05, 2019"),
-            reviewText: "Todo excelente"
-        }]
-    }
 })
