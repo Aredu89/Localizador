@@ -6,9 +6,89 @@ var sendJsonResponse = function(res, status, content) {
     res.json(content);
 };
 
-module.exports.reviewsCreate = function (req, res) {
-    sendJsonResponse(res, 200, {"status" : "post success"});
+//Función para agregar un comentario como subdocumento
+//a su correspondiente documento padre
+var doAddReview = function(req, res, location) {
+    if (!location) {
+        sendJsonResponse(res, 404, {
+            "message": "No se encontró la localización"
+        });
+    } else {
+        location.reviews.push({
+            author: req.body.author,
+            rating: req.body.rating,
+            reviewText: req.body.reviewText
+        });
+        location.save(function(err, location) {
+            var thisReview;
+            if (err) {
+                sendJsonResponse(res, 400, err);
+            } else {
+                updateAverageRating(location._id);
+                thisReview = location.reviews[location.reviews.length - 1];
+                sendJsonResponse(res, 201, thisReview);
+            }
+        });
+    }
 };
+
+//Actualizar el rating promedio
+var updateAverageRating = function(locationid) {
+    Loc
+        .findById(locationid)
+        .select('rating reviews')
+        .exec(
+        function(err, location) {
+            if (!err) {
+                doSetAverageRating(location);
+            }
+        });
+};
+
+//Setear el rating promedio
+var doSetAverageRating = function(location) {
+    var i, reviewCount, ratingAverage, ratingTotal;
+    if (location.reviews && location.reviews.length > 0) {
+        reviewCount = location.reviews.length;
+        ratingTotal = 0;
+        for (i = 0; i < reviewCount; i++) {
+            ratingTotal = ratingTotal + location.reviews[i].rating;
+        }
+        ratingAverage = parseInt(ratingTotal / reviewCount, 10);
+        location.rating = ratingAverage;
+        location.save(function(err) {
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Raiting promedio actualizado", ratingAverage);
+            }
+        });
+    }
+};
+
+//Crear un comentario
+module.exports.reviewsCreate = function (req, res) {
+    var locationId = req.params.locationid;
+    if (locationId) {
+        Loc
+            .findById(locationId)
+            .select('reviews')
+            .exec(
+                function(err,location) {
+                    if (err) {
+                        sendJsonResponse(res, 400, err);
+                    } else {
+                        doAddReview(req,res,location);
+                    }
+                }
+            );
+    } else {
+        sendJsonResponse(res,404, {
+            "message": "No se encontró el Id de la localización"
+        });
+    }
+};
+
 //Devolver un comentario sobre una locación específica
 module.exports.reviewsReadOne = function (req, res) {
     //Vemos si las variables están en el requerimiento
@@ -62,9 +142,105 @@ module.exports.reviewsReadOne = function (req, res) {
         });
     }
 };
+
+//Actualizar un comentario
 module.exports.reviewsUpdateOne = function (req, res) {
-    sendJsonResponse(res, 200, {"status" : "put success"});
+    //Verifico que los parámetros hayan sido enviados
+    if (!req.params.locationid || !req.params.reviewid) {
+        sendJsonResponse(res, 404, {
+            "message": "Not found, El id de la localizacion y el comentario son necesarios"
+        });
+        return;
+    }
+    //Utilizo el modelo de Mongoose
+    Loc
+        .findById(req.params.locationid)
+        .select('reviews')
+        .exec(
+            function(err, location) {
+                var thisReview;
+                if (!location) {
+                    sendJsonResponse(res, 404, {
+                        "message": "id de la localización no encontrado"
+                    });
+                    return;
+                } else if (err) {
+                    sendJsonResponse(res, 400, err);
+                    return;
+                }
+                if (location.reviews && location.reviews.length > 0) {
+                    thisReview = location.reviews.id(req.params.reviewid);
+                    if (!thisReview) {
+                        sendJsonResponse(res, 404, {
+                            "message": "id del comentario no encontrado"
+                        });
+                    } else {
+                        //Si no hay errores actualizo el documento temporal
+                        thisReview.author = req.body.author;
+                        thisReview.rating = req.body.rating;
+                        thisReview.reviewText = req.body.reviewText;
+                        //Envío los cambios a la BD
+                        location.save(function(err, location) {
+                            if (err) {
+                                sendJsonResponse(res, 404, err);
+                            } else {
+                                updateAverageRating(location._id);
+                                sendJsonResponse(res, 200, thisReview);
+                            }
+                        });
+                    }
+                } else {
+                    //Si la consulta a la BD no devuelve ningún documento
+                    sendJsonResponse(res, 404, {
+                        "message": "No hay comentarios para actualizar"
+                    });
+                }
+            }
+        );
 };
+
 module.exports.reviewsDeleteOne = function (req, res) {
-    sendJsonResponse(res, 200, {"status" : "delete success"});
+    if (!req.params.locationid || !req.params.reviewid) {
+        sendJsonResponse(res, 404, {
+            "message": "Not found, el id de la locación y el comentario son requeridos"
+        });
+        return;
+    }
+    Loc
+        .findById(req.params.locationid)
+        .select('reviews')
+        .exec(
+            function(err, location) {
+                if (!location) {
+                    sendJsonResponse(res, 404, {
+                        "message": "No se encontró el id de la localización"
+                    });
+                    return;
+                } else if (err) {
+                    sendJsonResponse(res, 400, err);
+                    return;
+                }
+                if (location.reviews && location.reviews.length > 0) {
+                    if (!location.reviews.id(req.params.reviewid)) {
+                        sendJsonResponse(res, 404, {
+                            "message": "No se encontró el id del comentario"
+                        });
+                    } else {
+                        location.reviews.id(req.params.reviewid).remove();
+                        location.save(function(err) {
+                            if (err) {
+                                sendJsonResponse(res, 404, err);
+                            } else {
+                                updateAverageRating(location._id);
+                                sendJsonResponse(res, 204, null);
+                            }
+                        });
+                    }
+                } else {
+                    sendJsonResponse(res, 404, {
+                        "message": "No se encontraron comentarios para eliminar"
+                    });
+                }
+            }
+        );
 };
