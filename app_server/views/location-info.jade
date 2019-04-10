@@ -38,7 +38,7 @@ block content
           .col-xs-12.col-sm-6.location-map
             .card.mb-3
               h4.card-header Ubicación
-              img(style='height: 380px; width: 100%; display: block;', src='./images/mapa1.png', alt='Card image')
+              img(style='height: 380px; width: 100%; display: block;', src='../images/mapa1.png', alt='Card image')
         .row
           .col-xs-12.col-lg-12
             .card.border-primary.mb-3(style='max-width: 100%;')
@@ -55,7 +55,8 @@ block content
                       span.reviewAuthor
                         b= review.author
                       small.reviewTime 
-                        k= review.timeStamp
+                        k  
+                          +formatDate(review.createdOn)
                   tr.table-secondary
                     td !{(review.reviewText).replace(/\n/g, '<br/>')}
       .col-xs-12.col-md-3

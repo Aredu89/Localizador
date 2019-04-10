@@ -1,92 +1,96 @@
-/* GET 'home' page */
-module.exports.homelist = function(req, res){
-    res.render('locations-list', { 
+var request = require('request');
+var apiOptions = {
+    server : "http://localhost:3000"
+};
+if (process.env.NODE_ENV === 'production') {
+    apiOptions.server = "https://guarded-stream-17787.herokuapp.com";
+}
+
+//Función para renderizar el homepage
+var renderHomepage = function(req, res, responseBody){
+    var message;
+    if (!(responseBody instanceof Array)) {
+        message = "La API tuvo un error al buscar localizaciones";
+        responseBody = [];
+    } else {
+        if (!responseBody.length) {
+            message = "No se encontraron localizaciones";
+        }
+    }
+    res.render('locations-list', {
         title: 'Localizador',
         pageHeader: {
             title: 'Localizador',
             strapline: 'Encontrá lugares para trabajar con wifi cerca tuyo!'
         },
         sidebar: 'Buscando wifi? Localizador te ayuda a encontrar lugares para trabajar cuando estás fuera de casa.',
-        locations: [
-            {
-                name: 'Starcups',
-                address: 'Av Velez Sarsfield 555, Córdoba',
-                rating: 2,
-                facilities: ['Bebidas calientes','Premium wifi','Tragos'],
-                distance: '100m'
-            },
-            {
-                name: 'Temple Bar',
-                address: 'Bario Güemes, Córdoba',
-                rating: 3,
-                facilities: ['Premium wifi','Tragos'],
-                distance: '200m'
-            },
-            {
-                name: 'Patio Olmos',
-                address: 'Av Velez Sarsfield y San Juan, Córdoba',
-                rating: 4,
-                facilities: ['Comidas','Premium wifi','Helados'],
-                distance: '300m'
-            },
-        ]
+        locations: responseBody,
+        message: message
     });
 };
 
-/* GET 'Location info' page */
-module.exports.locationInfo = function(req, res){
-    res.render('location-info', { 
-        title: 'Detalles',
+//Función para renderizar la página de detalles
+var renderDetailPage = function (req, res, locDetail) {
+    res.render('location-info', {
+        title: locDetail.name,
         pageHeader: {
-            title: 'Starcups'
+            title: locDetail.name
         },
         sidebar: {
             context: ' está en Localizador porque tiene acceso a wi fi y espacio para sentarse con tu laptop y trabajar.',
             callToAction: 'Si estuviste en este lugar y te gustó - o si no - por favor dejanos tus comentarios para ayudar a otras personas como vos.'
         },
-        location: {
-            name: 'Starcups',
-            address: 'Av Velez Sarsfield 555, Córdoba',
-            rating: 3,
-            facilities: ['Bebidas calientes','Premium wifi','Tragos'],
-            coords: {
-                lat: '51.455041',
-                long: '-0.9690884'
-            },
-            openingTimes: [
-                {
-                    days: 'Lunes - Viernes',
-                    opening: '7:00 am',
-                    closing: '10 pm',
-                    closed: false
-                },
-                {
-                    days: 'Sabados',
-                    opening: '8:00 am',
-                    closing: '7 pm',
-                    closed: false
-                },
-                {
-                    days: 'Domingo',
-                    closed: true
-                }
-            ],
-            reviews: [
-                {
-                    author: 'Ariel Rosales',
-                    rating: 3,
-                    timeStamp: '17 Febrero 2019',
-                    reviewText: 'Las instalaciones son muy comodas y tiene un buen wi fi.'
-                },
-                {
-                    author: 'Enzo Mariani',
-                    rating: 4,
-                    timeStamp: '13 Febrero 2019',
-                    reviewText: 'El café no es muy bueno, pero el lugar es cómodo y tranquilo para trabajar.'
-                }
-            ]
+        location: locDetail
+    })
+}
+
+/* GET 'home' page */
+module.exports.homelist = function(req, res){
+    var requestOptions, path;
+    path = '/api/locations';
+    requestOptions = {
+        url : apiOptions.server + path,
+        method : "GET",
+        json : {},
+        qs : {
+            lng : -0.7992599,
+            lat : 51.378091,
+            maxDistance : 20
         }
-    });
+    };
+    request(
+        requestOptions,
+        function(err, response, body) {
+            //Concatenamos la m a la distancia
+            var i, data;
+            data = body;
+            if (response.statusCode === 200 && data.length) {
+                for(i=0;i<data.length;i ++) {
+                    data[i].distance = data[i].distance + "m";
+                }
+            }
+            renderHomepage(req, res, data);
+        }
+    );
+};
+
+/* GET 'Location info' page */
+module.exports.locationInfo = function(req, res){
+    var requestOptions, path;
+    path = "/api/locations/" + req.params.locationid;
+    requestOptions = {
+        url : apiOptions.server + path,
+        method : "GET",
+        json : {}
+    };
+    request(
+        requestOptions,
+        function(err, response, body) {
+            var data = body;
+            data.distance = data.distance + "m";
+            renderDetailPage(req, res, data);
+        }
+    );
 };
 
 /* GET 'Add review' page */
