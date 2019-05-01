@@ -5,6 +5,32 @@ var apiOptions = {
 if (process.env.NODE_ENV === 'production') {
     apiOptions.server = "https://guarded-stream-17787.herokuapp.com";
 }
+//Funcion para renderizar el formulario para agregar comentarios
+var renderReviewForm = function(req,res, locDetail) {
+    res.render('location-review-form', { 
+        title: 'Comentario sobre ' + locDetail.name,
+        pageHeader: {
+            title: 'Comentario sobre ' + locDetail.name
+        }
+    });
+};
+
+//Función para mostrar errores
+var _showError = function (req, res, status) {
+    var title, content;
+    if (status === 404) {
+        title = "404, pagina no encontrada";
+        content = "Oh! Parece que no podemos encontrar la página";
+    } else {
+        title = status + ", algo esta mal";
+        content = "Algo, en algun lugar, falló";
+    }
+    res.status(status);
+    res.render('generic-text', {
+        title : title,
+        text : content
+    });
+};
 
 //Función para renderizar el homepage
 var renderHomepage = function(req, res, responseBody){
@@ -44,6 +70,30 @@ var renderDetailPage = function (req, res, locDetail) {
     })
 }
 
+// Funcion para obtener el detalle de una Localización, con callback
+// Renderiza la página de detalles o de comentarios dependiente la callback que recibe
+var getLocationInfo = function(req, res, callback){
+    var requestOptions, path;
+    path = "/api/locations/" + req.params.locationid;
+    requestOptions = {
+        url : apiOptions.server + path,
+        method : "GET",
+        json : {}
+    };
+    request(
+        requestOptions,
+        function(err, response, body) {
+            var data = body;
+            if (response.statusCode === 200) {
+                data.distance = data.distance + "m";
+                callback(req, res, data);
+            } else {
+                _showError(req, res, response.statusCode);
+            }
+        }
+    );
+};
+
 /* GET 'home' page */
 module.exports.homelist = function(req, res){
     var requestOptions, path;
@@ -68,6 +118,8 @@ module.exports.homelist = function(req, res){
                 for(i=0;i<data.length;i ++) {
                     data[i].distance = data[i].distance + "m";
                 }
+            } else {
+                _showError(req, res, response.statusCode);
             }
             renderHomepage(req, res, data);
         }
@@ -76,29 +128,19 @@ module.exports.homelist = function(req, res){
 
 /* GET 'Location info' page */
 module.exports.locationInfo = function(req, res){
-    var requestOptions, path;
-    path = "/api/locations/" + req.params.locationid;
-    requestOptions = {
-        url : apiOptions.server + path,
-        method : "GET",
-        json : {}
-    };
-    request(
-        requestOptions,
-        function(err, response, body) {
-            var data = body;
-            data.distance = data.distance + "m";
-            renderDetailPage(req, res, data);
-        }
-    );
+    getLocationInfo(req, res, function(req, res, responseData) {
+        renderDetailPage(req, res, responseData);
+    });
 };
 
 /* GET 'Add review' page */
 module.exports.addReview = function(req, res){
-    res.render('location-review-form', { 
-        title: 'Agregar Comentario',
-        pageHeader: {
-            title: 'Comentario sobre Starcups'
-        }
+    getLocationInfo(req, res, function(req, res, responseData) {
+        renderReviewForm(req, res, responseData);
     });
+};
+
+/*Agregar comentario*/
+module.exports.doAddReview = function(req,res){
+
 };

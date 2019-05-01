@@ -44,7 +44,7 @@ block content
             .card.border-primary.mb-3(style='max-width: 100%;')
               .card-header
                 h4.card-title Comentarios de Clientes
-                  a.btn.float-right.btn-outline-primary(type='button', href='/location/review/new') Comentar
+                  a.btn.float-right.btn-outline-primary(type='button', href='/location/#{location._id}/review/new') Comentar
               table.table.table-hover
                 each review in location.reviews
                   tr.table-primary
