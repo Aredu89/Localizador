@@ -6,11 +6,11 @@ if (process.env.NODE_ENV === 'production') {
     apiOptions.server = "https://guarded-stream-17787.herokuapp.com";
 }
 //Funcion para renderizar el formulario para agregar comentarios
-var renderReviewForm = function(req,res, locDetail) {
+var renderReviewForm = function(req,res) {
     res.render('location-review-form', { 
-        title: 'Comentario sobre ' + locDetail.name,
+        title: 'Agregar Comentario',
         pageHeader: {
-            title: 'Comentario sobre ' + locDetail.name
+            title: 'Comentario sobre Starcups'
         }
     });
 };
@@ -70,30 +70,6 @@ var renderDetailPage = function (req, res, locDetail) {
     })
 }
 
-// Funcion para obtener el detalle de una Localización, con callback
-// Renderiza la página de detalles o de comentarios dependiente la callback que recibe
-var getLocationInfo = function(req, res, callback){
-    var requestOptions, path;
-    path = "/api/locations/" + req.params.locationid;
-    requestOptions = {
-        url : apiOptions.server + path,
-        method : "GET",
-        json : {}
-    };
-    request(
-        requestOptions,
-        function(err, response, body) {
-            var data = body;
-            if (response.statusCode === 200) {
-                data.distance = data.distance + "m";
-                callback(req, res, data);
-            } else {
-                _showError(req, res, response.statusCode);
-            }
-        }
-    );
-};
-
 /* GET 'home' page */
 module.exports.homelist = function(req, res){
     var requestOptions, path;
@@ -128,19 +104,55 @@ module.exports.homelist = function(req, res){
 
 /* GET 'Location info' page */
 module.exports.locationInfo = function(req, res){
-    getLocationInfo(req, res, function(req, res, responseData) {
-        renderDetailPage(req, res, responseData);
-    });
+    var requestOptions, path;
+    path = "/api/locations/" + req.params.locationid;
+    requestOptions = {
+        url : apiOptions.server + path,
+        method : "GET",
+        json : {}
+    };
+    request(
+        requestOptions,
+        function(err, response, body) {
+            var data = body;
+            if (response.statusCode === 200) {
+                data.distance = data.distance + "m";
+                renderDetailPage(req, res, data);
+            } else {
+                _showError(req, res, response.statusCode);
+            }
+        }
+    );
 };
 
 /* GET 'Add review' page */
 module.exports.addReview = function(req, res){
-    getLocationInfo(req, res, function(req, res, responseData) {
-        renderReviewForm(req, res, responseData);
-    });
+    renderReviewForm(req,res);
 };
 
 /*Agregar comentario*/
 module.exports.doAddReview = function(req,res){
-
+    var requestOptions, path, locationid, postdata;
+    locationid = req.params.locationid;
+    path = "/api/locations/" + locationid + '/reviews';
+    postdata = {
+        author: req.body.name,
+        rating: parseInt(req.body.calificacion, 10),
+        reviewText: req.body.comentario
+    };
+    requestOptions = {
+        url : apiOptions.server + path,
+        method : "POST",
+        json : postdata
+    };
+    request(
+        requestOptions,
+        function(err, response, body) {
+            if (response.statusCode === 201) {
+                res.redirect('/location/' + locationid);
+            } else {
+                _showError(req, res, response.statusCode);
+            }
+        }
+    );
 };

@@ -11,17 +11,17 @@ block content
       form(action="", method="post", role="form")
         .form-group
           label(for='name') Nombre
-          input#exampleInputEmail1.form-control(type='email', aria-describedby='emailHelp', placeholder='Tu Nombre...')
+          input#exampleInputEmail1.form-control(type='text', placeholder='Tu Nombre...', name='name')
         .form-group
           label(for='clasificacion') Clasificación
-          select#exampleSelect1.form-control
+          select#exampleSelect1.form-control(name='calificacion')
             option 5
             option 4
             option 3
             option 2
             option 1
         .form-group
-          label(for='textarea') Tu comentario:
-          textarea#exampleTextarea.form-control(rows='3')
+          label(for='comentario') Tu comentario:
+          textarea#exampleTextarea.form-control(rows='3',name='comentario')
         button.btn.float-right.btn-primary(type='submit') Agregar Comentario
   .col-xs-12.col-md-4
