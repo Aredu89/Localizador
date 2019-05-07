@@ -8,7 +8,13 @@ block content
         hr.my-4
   .row
     .col-xs-12.col-md-6
-      form(action="", method="post", role="form")
+      form(action="", method="post", role="form", id='addReview')
+        - if (error == "val")
+          .alert.alert-dismissible.alert-warning
+            button.close(type='button', data-dismiss='alert') ×
+            h4.alert-heading Cuidado!
+            p.mb-0
+              | Todos los campos son requeridos, intente nuevamente.
         .form-group
           label(for='name') Nombre
           input#exampleInputEmail1.form-control(type='text', placeholder='Tu Nombre...', name='name')
