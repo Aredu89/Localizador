@@ -74,14 +74,13 @@ module.exports.locationsReadOne = function (req, res) {
                     sendJsonResponse(res, 404, {
                         "message": "Id de la localizacion no encontrado"
                     });
-                    return;
                 //Si la BD devuelve un error
                 } else if (err) {
                     sendJsonResponse(res, 404, err);
-                    return;
+                } else {
+                    //Se devuelve el documento encontrado
+                    sendJsonResponse(res, 200, location);
                 }
-                //Se devuelve el documento encontrado
-                sendJsonResponse(res, 200, location);
             });
     } else {
         sendJsonResponse(res, 404, {
