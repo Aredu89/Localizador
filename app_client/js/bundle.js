@@ -13494,8 +13494,7 @@ function (_React$Component) {
     value: function handleSubmit() {
       var _this2 = this;
 
-      console.log(this.state);
-      fetch("/locations/" + this.props.params.id + "/reviews", {
+      fetch("/api/locations/" + this.props.params.id + "/reviews", {
         method: 'POST',
         body: JSON.stringify(this.state),
         headers: {
@@ -13507,7 +13506,7 @@ function (_React$Component) {
       }).then(function (data) {
         console.log('Submitted: ', data);
 
-        _this2.props.router.push('/location/' + _this2.props.params.id);
+        _this2.props.history.push('/location/' + _this2.props.params.id);
       })["catch"](function (error) {
         return _this2.setState({
           error: error.message

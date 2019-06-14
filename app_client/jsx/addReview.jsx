@@ -29,8 +29,7 @@ class AddReview extends React.Component {
         this.setState({reviewText: event.target.value})
     }
     handleSubmit(){
-        console.log(this.state)
-        fetch("/locations/"+this.props.params.id+"/reviews",
+        fetch("/api/locations/"+this.props.params.id+"/reviews",
             {
                 method: 'POST',
                 body: JSON.stringify(this.state),
@@ -41,7 +40,7 @@ class AddReview extends React.Component {
             })
             .then((response)=>response.json())
             .then((data)=>{console.log('Submitted: ', data)
-                           this.props.router.push('/location/'+this.props.params.id)})
+                           this.props.history.push('/location/'+this.props.params.id)})
             .catch((error)=>this.setState({error: error.message}))
     }
     //Manejar tecla enter en el form
