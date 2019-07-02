@@ -86,10 +86,5 @@ class AddReview extends React.Component {
     </div>
     }
 }
-AddReview.propTypes = {
-    name: PropTypes.string,
-    textArea: PropTypes.string,
-    selectedValue: PropTypes.number
-}
 
 module.exports = AddReview

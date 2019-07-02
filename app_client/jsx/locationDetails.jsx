@@ -7,6 +7,8 @@ const RatingStars = require('./ratingStars.jsx')
 const Error = require('./error.jsx')
 const Navigation = require('./navigation.jsx')
 const {Link} = require('react-router')
+const {connect} = require('react-redux')
+const {fetchLocationDetailsActionCreator} = require('../modules/locations.js')
 
 class LocationDetails extends React.Component {
     constructor(props){
@@ -29,21 +31,22 @@ class LocationDetails extends React.Component {
                               isLoading: false}))
             .catch((error)=>this.setState({error: error.message, isLoading: false}))
     }
+
     render(){
         const {location, error, isLoading} = this.state
         return <div>
             <Navigation/>
             <div className="container">
                 <Header
-                    title={this.state.location.name}
+                    title={location.name}
                     strapline="Informacion"/>
                 {error ? <Error errorMessage = {error}/> : null}
                 <div className="row">
                     <div className="col-xs-12 col-md-9">
                         <div className="row">
                             <div className="col-xs-12 col-sm-6">
-                                <RatingStars rating={this.state.location.rating}/>
-                                <p>{this.state.location.address}</p>
+                                <RatingStars rating={location.rating}/>
+                                <p>{location.address}</p>
                                 <div className="card border-primary mb-3">
                                     <div className="card-header">
                                         <h4 className="card-title">Horario de atención</h4>
@@ -101,7 +104,7 @@ class LocationDetails extends React.Component {
                                     <div className="card-header">
                                         <h4 className="card-title">
                                             Comentarios de Clientes
-                                            <Link to={'/location/'+this.state.location._id+'/review/new'}>
+                                            <Link to={'/location/'+location._id+'/review/new'}>
                                                 <button className="btn float-right btn-outline-primary" type="button">Comentar</button>
                                             </Link>
                                         </h4>
@@ -140,7 +143,7 @@ class LocationDetails extends React.Component {
                     </div>
                     <div className="col-xs-12 col-md-3">
                         <p className="lead">
-                            {this.state.location.name} está en el Localizador porque tiene acceso a wifi y espacio para sentarse con tu laptop y trabajar.
+                            {location.name} está en el Localizador porque tiene acceso a wifi y espacio para sentarse con tu laptop y trabajar.
                         </p>
                         <p>
                             Si has estado en este lugar, por favor dejá tu comentario para ayudar a otras personas como vos.
